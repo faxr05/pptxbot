@@ -19,8 +19,8 @@ from docx.shared import Pt as DocPt, RGBColor as DocRGB
 from database import get_db, init_db
 
 # ============ KONFIGURATSIYA ============
-BOT_TOKEN = "8434:AAE8IkxlJ4L30"
-GEMINI_API_KEY = "AIzaCM"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+GEMINI_API_KEY = os.getenv("API_KEY")
 REQUIRED_CHANNEL = "@bkzsdfgahd"
 
 # Gemini AI sozlash
