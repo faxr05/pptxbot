@@ -46,14 +46,14 @@ def init_db():
         # Users table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY,
+                user_id BIGINT PRIMARY KEY,
                 username TEXT,
                 first_name TEXT,
                 language TEXT DEFAULT 'uz',
-                daily_limit INTEGER DEFAULT 2,
-                used_today INTEGER DEFAULT 0,
+                daily_limit BIGINT DEFAULT 2,
+                used_today BIGINT DEFAULT 0,
                 last_reset DATE,
-                total_generations INTEGER DEFAULT 0,
+                total_generations BIGINT DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -62,34 +62,35 @@ def init_db():
         # Generations table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS generations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
                 doc_type TEXT NOT NULL,
                 topic TEXT NOT NULL,
-                pages INTEGER NOT NULL,
+                pages BIGINT NOT NULL,
                 design TEXT,
                 status TEXT DEFAULT 'pending',
                 file_path TEXT,
                 error_message TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 completed_at TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
+                CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (user_id)
             )
         ''')
         
         # Referrals table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS referrals (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                referrer_id INTEGER NOT NULL,
-                referred_id INTEGER NOT NULL,
-                bonus_applied BOOLEAN DEFAULT 0,
+                id BIGSERIAL PRIMARY KEY,
+                referrer_id BIGINT NOT NULL,
+                referred_id BIGINT NOT NULL,
+                bonus_applied BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (referrer_id) REFERENCES users (user_id),
-                FOREIGN KEY (referred_id) REFERENCES users (user_id),
+                CONSTRAINT fk_referrer FOREIGN KEY (referrer_id) REFERENCES users (user_id),
+                CONSTRAINT fk_referred FOREIGN KEY (referred_id) REFERENCES users (user_id),
                 UNIQUE(referrer_id, referred_id)
             )
         ''')
+
         
         # Create indexes for better performance
         cursor.execute('''
@@ -447,5 +448,6 @@ else:
     except Exception as e:
 
         print(f"Warning: Could not initialize database: {e}")
+
 
 
