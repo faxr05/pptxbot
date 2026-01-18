@@ -3,21 +3,29 @@ Database module for Telegram Bot
 Handles all database operations for users, generations, and referrals
 """
 
-import sqlite3
+import os
+import psycopg2
 from datetime import datetime, date
 from typing import Optional, Dict, List, Tuple
-from contextlib import contextmanager
+from contextlib import contextmanag
 
-DATABASE_NAME = 'bot_data.db'
+# Railway'dagi DATABASE_URL hamma ma'lumotni o'zi ichiga oladi
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+# Faqat shunday ulanasiz:
+conn = psycopg2.connect(DATABASE_URL)
+cursor = conn.cursor()
 
 # ============ DATABASE CONNECTION ============
 
 @contextmanager
 def get_connection():
-    """Context manager for database connections"""
-    conn = sqlite3.connect(DATABASE_NAME)
-    conn.row_factory = sqlite3.Row  # Returns dict-like rows
-    conn.execute("PRAGMA foreign_keys = ON")  # Enable foreign keys
+    """Context manager for PostgreSQL connections"""
+    # 1. (DATABASE_NAME) qismini butunlay o'chiring
+    # 2. sslmode='require' ni qo'shish tavsiya etiladi
+    db_url = os.environ.get('DATABASE_URL')
+    conn = psycopg2.connect(db_url, sslmode='require')
+    
     try:
         yield conn
         conn.commit()
@@ -439,3 +447,4 @@ else:
     except Exception as e:
 
         print(f"Warning: Could not initialize database: {e}")
+
