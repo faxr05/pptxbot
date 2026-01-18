@@ -115,7 +115,7 @@ class UserDB:
             cursor = conn.cursor()
             
             # Check if user exists
-            cursor.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
+            cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
             existing = cursor.fetchone()
             
             if existing:
@@ -437,4 +437,5 @@ else:
     try:
         init_db()
     except Exception as e:
+
         print(f"Warning: Could not initialize database: {e}")
