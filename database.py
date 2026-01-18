@@ -7,7 +7,7 @@ import os
 import psycopg2
 from datetime import datetime, date
 from typing import Optional, Dict, List, Tuple
-from contextlib import contextmanag
+from contextlib import contextmanager
 
 # Railway'dagi DATABASE_URL hamma ma'lumotni o'zi ichiga oladi
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -448,6 +448,7 @@ else:
     except Exception as e:
 
         print(f"Warning: Could not initialize database: {e}")
+
 
 
 
