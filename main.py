@@ -16,7 +16,7 @@ from docx import Document
 from docx.shared import Pt as DocPt, RGBColor as DocRGB
 
 # ============ DATABASE IMPORT ============
-from database import get_db, init_db
+from database import get_db, init_db, create_user
 
 # ============ KONFIGURATSIYA ============
 BOT_TOKEN = os.getenv("BOT_TOKEN")
