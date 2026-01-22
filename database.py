@@ -10,7 +10,7 @@ from typing import Optional, Dict, List, Tuple
 from contextlib import contextmanager
 
 # Railway'dagi DATABASE_URL hamma ma'lumotni o'zi ichiga oladi
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL',sslmode=require)
 
 # Faqat shunday ulanasiz:
 conn = psycopg2.connect(DATABASE_URL)
@@ -448,6 +448,7 @@ else:
     except Exception as e:
 
         print(f"Warning: Could not initialize database: {e}")
+
 
 
 
