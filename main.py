@@ -279,7 +279,7 @@ Requirements:
         data = json.loads(result_text)
         return data
     except json.JSONDecodeError as e:
-        print(f"JSON parse error: {e}")
+        #print(f"JSON parse error: {e}")
         print(f"Response text: {result_text[:500]}")
         raise Exception("AI javobini tahlil qilishda xatolik")
     except Exception as e:
@@ -711,15 +711,15 @@ async def back_to_start(callback: types.CallbackQuery, state: FSMContext):
 # ============ BOTNI ISHGA TUSHIRISH ============
 async def main():
     """Botni ishga tushirish funksiyasi"""
-    print("=" * 50)
+    #print("=" * 50)
     print("🤖 Bot ishga tushmoqda...")
-    print("=" * 50)
-    print(f"📊 Bot nomi: Presentation & Report Generator")
-    print(f"🔑 Token: {BOT_TOKEN[:10]}...")
-    print(f"📢 Majburiy kanal: {REQUIRED_CHANNEL}")
-    print(f"🤖 AI Model: Gemini Pro")
-    print(f"💾 Database: SQLite (bot_data.db)")
-    print("=" * 50)
+    #print("=" * 50)
+    #print(f"📊 Bot nomi: Presentation & Report Generator")
+    #print(f"🔑 Token: {BOT_TOKEN[:10]}...")
+    #print(f"📢 Majburiy kanal: {REQUIRED_CHANNEL}")
+    #print(f"🤖 AI Model: Gemini Pro")
+    #print(f"💾 Database: SQLite (bot_data.db)")
+    #print("=" * 50)
     
     # Initialize database
     try:
@@ -729,7 +729,7 @@ async def main():
         print(f"⚠️ Database initialization warning: {e}")
     
     print("✅ Bot muvaffaqiyatli ishga tushdi!")
-    print("💬 Xabarlarni kutmoqda...\n")
+    #print("💬 Xabarlarni kutmoqda...\n")
     
     try:
         await dp.start_polling(bot, skip_updates=True)
