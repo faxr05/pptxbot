@@ -134,13 +134,13 @@ class UserDB:
             today = date.today().isoformat()
             cursor.execute('''
                 INSERT INTO users (user_id, username, first_name, last_reset)
-                VALUES ($s, $s, $s, $s)
+                VALUES (%s, %s, %s, %s)
             ''', (user_id, username, first_name, today))
             
             conn.commit()
             
             # Return created user
-            cursor.execute('SELECT * FROM users WHERE user_id = $s', (user_id,))
+            cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
             return dict(cursor.fetchone())
     
     @staticmethod
@@ -148,7 +148,7 @@ class UserDB:
         """Get user by ID"""
         with get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM users WHERE user_id = $s', (user_id,))
+            cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
             row = cursor.fetchone()
             return dict(row) if row else None
     
@@ -159,8 +159,8 @@ class UserDB:
             cursor = conn.cursor()
             cursor.execute('''
                 UPDATE users 
-                SET language = $s, updated_at = CURRENT_TIMESTAMP
-                WHERE user_id = $s
+                SET language = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE user_id = %s
             ''', (language, user_id))
             conn.commit()
     
@@ -196,7 +196,7 @@ class UserDB:
                 SET used_today = used_today + 1,
                     total_generations = total_generations + 1,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE user_id = $s
+                WHERE user_id = %s
             ''', (user_id,))
             conn.commit()
     
@@ -215,9 +215,9 @@ class UserDB:
                 cursor.execute('''
                     UPDATE users 
                     SET used_today = 0, 
-                        last_reset = $s,
+                        last_reset = %s,
                         updated_at = CURRENT_TIMESTAMP
-                    WHERE user_id = $s
+                    WHERE user_id = %s
                 ''', (today, user_id))
                 conn.commit()
     
@@ -243,7 +243,7 @@ class GenerationDB:
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO generations (user_id, doc_type, topic, pages, design, status)
-                VALUES ($s, $s, $s, $s, $s, 'pending')
+                VALUES (%s, %s, %s, %s, %s, 'pending')
             ''', (user_id, doc_type, topic, pages, design))
             conn.commit()
             return cursor.lastrowid
@@ -259,11 +259,11 @@ class GenerationDB:
             
             cursor.execute('''
                 UPDATE generations 
-                SET status = $s, 
-                    file_path = $s,
-                    error_message = $s,
-                    completed_at = $s
-                WHERE id = $s
+                SET status = %s, 
+                    file_path = %s,
+                    error_message = %s,
+                    completed_at = %s
+                WHERE id = %s
             ''', (status, file_path, error_message, completed_at, generation_id))
             conn.commit()
     
@@ -272,7 +272,7 @@ class GenerationDB:
         """Get generation by ID"""
         with get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM generations WHERE id = $s', (generation_id,))
+            cursor.execute('SELECT * FROM generations WHERE id = %s', (generation_id,))
             row = cursor.fetchone()
             return dict(row) if row else None
     
@@ -283,9 +283,9 @@ class GenerationDB:
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT * FROM generations 
-                WHERE user_id = $s 
+                WHERE user_id = %s 
                 ORDER BY created_at DESC 
-                LIMIT $s
+                LIMIT %s
             ''', (user_id, limit))
             return [dict(row) for row in cursor.fetchall()]
     
@@ -301,7 +301,7 @@ class GenerationDB:
                        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
                        SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed
                 FROM generations
-                WHERE user_id = $s
+                WHERE user_id = %s
             ''', (user_id,))
             
             row = cursor.fetchone()
@@ -323,7 +323,7 @@ class ReferralDB:
                 # Check if referral already exists
                 cursor.execute('''
                     SELECT id FROM referrals 
-                    WHERE referrer_id = $s AND referred_id = $s
+                    WHERE referrer_id = %s AND referred_id = %s
                 ''', (referrer_id, referred_id))
                 
                 if cursor.fetchone():
@@ -332,7 +332,7 @@ class ReferralDB:
                 # Add referral
                 cursor.execute('''
                     INSERT INTO referrals (referrer_id, referred_id, bonus_applied)
-                    VALUES ($s, $s, 1)
+                    VALUES (%s, %s, 1)
                 ''', (referrer_id, referred_id))
                 
                 # Give bonus to referrer (+1 permanent limit)
@@ -340,7 +340,7 @@ class ReferralDB:
                     UPDATE users 
                     SET daily_limit = daily_limit + 1,
                         updated_at = CURRENT_TIMESTAMP
-                    WHERE user_id = $s
+                    WHERE user_id = %s
                 ''', (referrer_id,))
                 
                 conn.commit()
@@ -357,7 +357,7 @@ class ReferralDB:
             cursor.execute('''
                 SELECT COUNT(*) as count 
                 FROM referrals 
-                WHERE referrer_id = $s
+                WHERE referrer_id = %s
             ''', (referrer_id,))
             row = cursor.fetchone()
             return row['count'] if row else 0
@@ -371,7 +371,7 @@ class ReferralDB:
                 SELECT r.*, u.username, u.first_name 
                 FROM referrals r
                 LEFT JOIN users u ON r.referred_id = u.user_id
-                WHERE r.referrer_id = $s
+                WHERE r.referrer_id = %s
                 ORDER BY r.created_at DESC
             ''', (referrer_id,))
             return [dict(row) for row in cursor.fetchall()]
@@ -384,7 +384,7 @@ class ReferralDB:
             cursor.execute('''
                 SELECT referrer_id 
                 FROM referrals 
-                WHERE referred_id = $s
+                WHERE referred_id = %s
             ''', (referred_id,))
             row = cursor.fetchone()
             return row['referrer_id'] if row else None
